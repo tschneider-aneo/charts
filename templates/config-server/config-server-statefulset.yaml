@@ -274,11 +274,13 @@ spec:
               subPath: app-mongosh-dir
             - name: replicaset-entrypoint-configmap
               mountPath: /entrypoint
+            {{- if .Values.configsvr.persistence.enabled }}
             - name: datadir
               mountPath: {{ .Values.configsvr.persistence.mountPath }}
               {{- if .Values.configsvr.persistence.subPath }}
               subPath: {{ include "common.tplvalues.render" (dict "value" .Values.configsvr.persistence.subPath "context" $) }}
               {{- end }}
+            {{- end }}
             {{- if or .Values.configsvr.config .Values.configsvr.configCM }}
             - name: config
               mountPath: /bitnami/mongodb/conf/
