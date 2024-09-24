@@ -13,7 +13,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 7.0.14
-    created: "2024-09-24T16:13:04.676791701+02:00"
+    created: "2024-09-24T16:22:09.655974827+02:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -40,6 +40,6 @@ entries:
     sources:
     - https://github.com/bitnami/charts/tree/main/bitnami/mongodb-sharded
     urls:
-    - mongodb-sharded-8.3.7.tgz
+    - https://charts.tschneider-aneo.github.io/charts/index.yaml/mongodb-sharded-8.3.7.tgz
     version: 8.3.7
-generated: "2024-09-24T16:13:04.672149309+02:00"
+generated: "2024-09-24T16:22:09.648464228+02:00"
