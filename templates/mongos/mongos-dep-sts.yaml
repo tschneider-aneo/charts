@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ if .Values.mongos.useStatefulSet }}{{ include "common.capabilities.statefulset.apiVersion" . }}{{- else }}{{ include "common.capabilities.deployment.apiVersion" . }}{{- end }}
 kind: {{ if .Values.mongos.useStatefulSet }}StatefulSet{{- else }}Deployment{{- end }}
 metadata:
-  name: {{ printf "%s-mongos" (include "common.names.fullname" .) }}
+  name: {{ printf "%s-mongosrouter" (include "common.names.fullname" .) }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
     app.kubernetes.io/component: mongos
