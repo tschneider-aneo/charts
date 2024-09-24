@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2.23.0
-    created: "2024-09-24T16:48:08.648873402+02:00"
+    created: "2024-09-24T18:56:58.054228946+02:00"
     description: A Library Helm Chart for grouping common logic between bitnami charts.
       This chart is not deployable by itself.
     digest: 5f18fc6c511f853f98740d59fd608e38e7b16e21a462134a897225e3cc44307e
@@ -26,7 +26,7 @@ entries:
     - https://github.com/bitnami/charts/tree/main/bitnami/common
     type: library
     urls:
-    - https://tschneider-aneo.github.io/charts/charts/common-2.23.0.tgz
+    - charts/common-2.23.0.tgz
     version: 2.23.0
   mongodb-sharded:
   - annotations:
@@ -41,7 +41,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 7.0.14
-    created: "2024-09-24T16:48:08.648250461+02:00"
+    created: "2024-09-24T18:56:58.053089482+02:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -51,7 +51,7 @@ entries:
     description: MongoDB(R) is an open source NoSQL database that uses JSON for data
       storage. MongoDB(TM) Sharded improves scalability and reliability for large
       datasets by distributing data across multiple machines.
-    digest: 9463dd21b2b996719887df681a9acdf79af4b65c094e754aa5e39ee5ca94bb79
+    digest: ba8c1331ef54cfdba30c9d2d0b1f5bcb6b3cf58bc3dc399c2af9151770cdfec1
     home: https://bitnami.com
     icon: https://bitnami.com/assets/stacks/mongodb/img/mongodb-stack-220x234.png
     keywords:
@@ -68,6 +68,6 @@ entries:
     sources:
     - https://github.com/bitnami/charts/tree/main/bitnami/mongodb-sharded
     urls:
-    - https://tschneider-aneo.github.io/charts/mongodb-sharded-8.3.7.tgz
+    - mongodb-sharded-8.3.7.tgz
     version: 8.3.7
-generated: "2024-09-24T16:48:08.644156492+02:00"
+generated: "2024-09-24T18:56:58.049082534+02:00"
