@@ -100,11 +100,13 @@ spec:
             - name: empty-dir
               mountPath: /tmp
               subPath: tmp-dir
+            {{- if $.Values.shardsvr.persistence.enabled }}
             - name: datadir
               mountPath: {{ $.Values.shardsvr.persistence.mountPath }}
               {{- if $.Values.shardsvr.persistence.subPath }}
               subPath: {{ include "common.tplvalues.render" (dict "value" $.Values.shardsvr.persistence.subPath "context" $) }}
               {{- end }}
+            {{- end }}
         {{- end }}
         {{- with $.Values.shardsvr.dataNode.initContainers }}
         {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 8 }}
