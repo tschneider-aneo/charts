@@ -425,7 +425,7 @@ spec:
         {{- if .Values.configsvr.extraVolumes }}
           {{- include "common.tplvalues.render" ( dict "value" .Values.configsvr.extraVolumes "context" $ ) | nindent 8 }}
         {{- end }}
-  {{- if not .Values.persistence.enabled }}
+  {{- if not .Values.configsvr.persistence.enabled }}
         - name: datadir
           emptyDir: {}
   {{- else }}
