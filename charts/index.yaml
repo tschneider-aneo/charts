@@ -17,7 +17,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 8.0.4
-    created: "2025-01-09T16:52:25.632024901+01:00"
+    created: "2025-01-09T17:33:00.803789564+01:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -59,7 +59,48 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 8.0.4
-    created: "2025-01-09T16:52:25.637145546+01:00"
+    created: "2025-01-09T17:33:00.798610732+01:00"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/bitnamicharts
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: MongoDB(R) is an open source NoSQL database that uses JSON for data
+      storage. MongoDB(TM) Sharded improves scalability and reliability for large
+      datasets by distributing data across multiple machines.
+    digest: aff9750eee1bcfd58491fedbc1e40ceb69cba0c4aeb62dd28afb49b6f8981e60
+    home: https://bitnami.com
+    icon: https://bitnami.com/assets/stacks/mongodb/img/mongodb-stack-220x234.png
+    keywords:
+    - mongodb
+    - database
+    - nosql
+    - cluster
+    - replicaset
+    - replication
+    maintainers:
+    - name: Broadcom, Inc. All Rights Reserved.
+      url: https://github.com/bitnami/charts
+    name: mongodb-sharded
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/mongodb-sharded
+    urls:
+    - mongodb-sharded-9.1.0.tgz
+    version: 9.1.0
+  - annotations:
+      category: Database
+      images: |
+        - name: mongodb-exporter
+          image: docker.io/bitnami/mongodb-exporter:0.43.0-debian-12-r0
+        - name: mongodb-sharded
+          image: docker.io/bitnami/mongodb-sharded:8.0.4-debian-12-r0
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:12-debian-12-r33
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 8.0.4
+    created: "2025-01-09T17:33:00.808112154+01:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -88,4 +129,4 @@ entries:
     urls:
     - mongodb-sharded/mongodb-sharded-9.1.0.tgz
     version: 9.1.0
-generated: "2025-01-09T16:52:25.623339333+01:00"
+generated: "2025-01-09T17:33:00.792079792+01:00"
