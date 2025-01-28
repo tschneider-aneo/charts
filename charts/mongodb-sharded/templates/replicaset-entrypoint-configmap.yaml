@@ -11,9 +11,9 @@ kind: ConfigMap
 metadata:
   name: {{ printf "%s-replicaset-entrypoint-%d" (include "common.names.fullname" $ ) $i }}
   namespace: {{ include "common.names.namespace" $ | quote }}
-  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
-  {{- if .Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" $.Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if $.Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $.Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
   replicaset-entrypoint.sh: |-
@@ -42,16 +42,16 @@ data:
     current_primary=""
     if is_dir_empty "${MONGODB_DATA_DIR}/db"; then
       info "Data dir empty, checking if the replica set already exists"
-      {{- $replicaCount := int .Values.shardsvr.dataNode.replicaCount }}
-      {{- $portNumber := int .Values.service.ports.mongodb }}
-      {{- $fullname := include "mongodb.fullname" . }}
-      {{- $releaseNamespace := include "mongodb.namespace" . }}
-      {{- $clusterDomain := .Values.clusterDomain }}
+      {{- $replicaCount := int $.Values.shardsvr.dataNode.replicaCount }}
+      {{- $portNumber := int $.Values.service.ports.mongodb }}
+      {{- $fullname := include "mongodb.fullname" $ }}
+      {{- $releaseNamespace := include "mongodb.namespace" $ }}
+      {{- $clusterDomain := $.Values.clusterDomain }}
       {{- $mongoList := list }}
       {{- range $j, $e := until $replicaCount }}
       {{- $mongoList = append $mongoList (printf "%s-shard%d-data-%d.%s-headless.%s.svc.%s:%d" $fullname $i $j $fullname $releaseNamespace $clusterDomain $portNumber) }}
       {{- end }}
-      current_primary=$(mongosh admin --host "{{ join "," $mongoList }}" {{- if .Values.auth.enabled }} --authenticationDatabase admin -u $MONGODB_ROOT_USER -p $MONGODB_ROOT_PASSWORD{{- end }} --eval 'db.runCommand("ismaster")' | awk -F\' '/primary:/ {print $2}')
+      current_primary=$(mongosh admin --host "{{ join "," $mongoList }}" {{- if $.Values.auth.enabled }} --authenticationDatabase admin -u $MONGODB_ROOT_USER -p $MONGODB_ROOT_PASSWORD{{- end }} --eval 'db.runCommand("ismaster")' | awk -F\' '/primary:/ {print $2}')
       
       if ! is_empty_value "$current_primary"; then
         info "Detected existing primary: ${current_primary}"
@@ -74,7 +74,7 @@ data:
     else
       info "Pod name doesn't match initial primary pod name, configuring node as a secondary"
       export MONGODB_REPLICA_SET_MODE=secondary
-      {{- if .Values.auth.usePasswordFile }}
+      {{- if $.Values.auth.usePasswordFile }}
       export MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD_FILE="$MONGODB_ROOT_PASSWORD_FILE"
       unset MONGODB_ROOT_PASSWORD_FILE
       {{- else }}
