@@ -249,3 +249,20 @@ mongodb: .Values.mongos.servicePerReplica.loadBalancerIPs
 {{- include "common.warnings.rollingTag" .Values.metrics.image }}
 {{- include "common.warnings.rollingTag" .Values.volumePermissions.image }}
 {{- end -}}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "mongodb.fullname" -}}
+{{- include "common.names.fullname" . -}}
+{{- end -}}
+
+{{- define "mongodb.namespace" -}}
+    {{- if .Values.namespaceOverride -}}
+        {{- print .Values.namespaceOverride -}}
+    {{- else -}}
+        {{- print .Release.Namespace -}}
+    {{- end }}
+{{- end -}}

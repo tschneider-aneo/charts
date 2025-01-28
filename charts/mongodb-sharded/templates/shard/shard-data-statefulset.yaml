@@ -399,7 +399,7 @@ spec:
           emptyDir: {}
         - name: replicaset-entrypoint-configmap
           configMap:
-            name: {{ printf "%s-replicaset-entrypoint" (include "common.names.fullname" $) }}
+            name: {{ printf "%s-replicaset-entrypoint-%d" (include "common.names.fullname" $) $i }}
         {{- if $.Values.auth.usePasswordFile }}
         - name: secrets
           secret:

@@ -3,10 +3,13 @@ Copyright Broadcom, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- if .Values.shards }}
+{{- $replicas := .Values.shards | int }}
+{{- range $i, $e := until $replicas }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ printf "%s-replicaset-entrypoint" (include "common.names.fullname" .) }}
+  name: {{ printf "%s-replicaset-entrypoint-%d" (include "common.names.fullname" .) $i }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.commonAnnotations }}
@@ -19,13 +22,57 @@ data:
     sleep 5
 
     . /liblog.sh
+    . /opt/bitnami/scripts/mongodb-env.sh
+    . /opt/bitnami/scripts/libfs.sh
+    . /opt/bitnami/scripts/liblog.sh
+    . /opt/bitnami/scripts/libvalidations.sh
+
+    if is_empty_value "$MONGODB_ADVERTISED_PORT_NUMBER"; then
+      echo "Advertised Port: $MONGODB_ADVERTISED_PORT_NUMBER"
+      export MONGODB_ADVERTISED_PORT_NUMBER="$MONGODB_PORT_NUMBER"
+    fi
+
+    info "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
+    info "Advertised Port: $MONGODB_ADVERTISED_PORT_NUMBER"
+
+    # Check for existing replica set in case there is no data in the PVC
+    # This is for cases where the PVC is lost or for MongoDB caches without
+    # persistence
+
+    current_primary=""
+    if is_dir_empty "${MONGODB_DATA_DIR}/db"; then
+      info "Data dir empty, checking if the replica set already exists"
+      {{- $replicaCount := int .Values.shardsvr.dataNode.replicaCount }}
+      {{- $portNumber := int .Values.service.ports.mongodb }}
+      {{- $fullname := include "mongodb.fullname" . }}
+      {{- $releaseNamespace := include "mongodb.namespace" . }}
+      {{- $clusterDomain := .Values.clusterDomain }}
+      {{- $mongoList := list }}
+      {{- range $j, $e := until $replicaCount }}
+      {{- $mongoList = append $mongoList (printf "%s-shard%d-data-%d.%s-headless.%s.svc.%s:%d" $fullname $i $j $fullname $releaseNamespace $clusterDomain $portNumber) }}
+      {{- end }}
+      current_primary=$(mongosh admin --host "{{ join "," $mongoList }}" {{- if .Values.auth.enabled }} --authenticationDatabase admin -u $MONGODB_ROOT_USER -p $MONGODB_ROOT_PASSWORD{{- end }} --eval 'db.runCommand("ismaster")' | awk -F\' '/primary:/ {print $2}')
+      
+      if ! is_empty_value "$current_primary"; then
+        info "Detected existing primary: ${current_primary}"
+      fi
+    fi
 
     # Perform adaptations depending on the host name
-    if [[ $HOSTNAME =~ (.*)-0$ ]]; then
-      info "Setting node as primary"
+    if ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" == "$current_primary" ]]; then
+        info "Advertised name matches current primary, configuring node as a primary"
+        export MONGODB_REPLICA_SET_MODE="primary"
+    elif ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" != "$current_primary" ]]; then
+        info "Current primary is different from this node. Configuring the node as replica of ${current_primary}"
+        export MONGODB_REPLICA_SET_MODE="secondary"
+        export MONGODB_INITIAL_PRIMARY_HOST="${current_primary%:*}"
+        export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="${current_primary#*:}"
+        export MONGODB_SET_SECONDARY_OK="yes"
+    elif [[ $HOSTNAME =~ (.*)-0$ ]]; then
+      info "Pod name matches initial primary pod name, configuring node as a primary"
       export MONGODB_REPLICA_SET_MODE=primary
     else
-      info "Setting node as secondary"
+      info "Pod name doesn't match initial primary pod name, configuring node as a secondary"
       export MONGODB_REPLICA_SET_MODE=secondary
       {{- if .Values.auth.usePasswordFile }}
       export MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD_FILE="$MONGODB_ROOT_PASSWORD_FILE"
@@ -37,3 +84,8 @@ data:
     fi
 
     exec /entrypoint.sh /run.sh
+{{- if lt $i (sub $replicas 1) }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
