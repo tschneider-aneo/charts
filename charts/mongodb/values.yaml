@@ -1305,6 +1305,9 @@ persistence:
   ## Requires persistence.enabled: false
   ##
   medium: ""
+  ## @param persistence.volumeBlock Whether the PVC should have `volumeMode` set to 'Block'
+  ##
+  volumeBlock: false
   ## @param persistence.existingClaim Provide an existing `PersistentVolumeClaim` (only when `architecture=standalone`)
   ## Requires persistence.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
